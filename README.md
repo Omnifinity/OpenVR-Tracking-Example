@@ -1,6 +1,8 @@
 #  What is this?
 A rapid and simple example of how to start a background process for listening to HTC Vive Lighthouse tracking data. 
 
+Uses OpenVR 1.0.2.
+
 Compiled using Visual Studio 2013. Please adapt as suitable. 
 
 ##  How do I compile it?

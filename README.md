@@ -5,6 +5,9 @@ Uses OpenVR 1.0.2.
 
 Compiled using Visual Studio 2013. Please adapt as suitable. 
 
+##  How do I run it?
+There is an executable in the Binary folder. Unarchive that and run it through a console after you've started Steam VR. Background processes are not allowed to start up SteamVR by themselves. 
+
 ##  How do I compile it?
 1. Make sure that you point your includes and library bin folder to where you have openvr installed on your machine.
 2. Make sure you've got the openvr_api.dll in the same folder as the built example

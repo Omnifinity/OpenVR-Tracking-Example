@@ -365,7 +365,7 @@ void LighthouseTracking::ParseTrackingFrame() {
 			// Simliar to the HMD case block above, please adapt as you like
 			// to get away with code duplication and general confusion
 
-			vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, &trackedDevicePose);
+			vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), &trackedDevicePose);
 
 			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
 			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);

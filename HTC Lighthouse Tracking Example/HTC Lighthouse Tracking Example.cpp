@@ -40,7 +40,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 
 			// a delay to not overheat your computer... :)
-			Sleep(100);
+			Sleep(1);
 		}
 
 		delete lighthouseTracking;

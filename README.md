@@ -1,12 +1,14 @@
 #  What is this?
 A rapid and simple example of how to start a background process for listening to HTC Vive Lighthouse tracking data. 
 
-Uses OpenVR 1.0.5.
+Uses OpenVR 1.1.3.
 
 Compiled using Visual Studio 2013. Please adapt as suitable. 
 
 ##  How do I run it?
 There is an executable in the Binary folder. Unarchive that and run it through a console after you've started Steam VR. Background processes are not allowed to start up SteamVR by themselves. 
+
+If you supply the parameter "--showonlydeviceid <number>" you can choose to show data/events for a specific device. E.g. "--showonlydeviceid 0" would show only data for the HMD.
 
 ##  How do I compile it?
 1. Make sure that you point your includes and library bin folder to where you have openvr installed on your machine.

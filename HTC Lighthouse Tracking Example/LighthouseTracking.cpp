@@ -21,15 +21,23 @@ LighthouseTracking::~LighthouseTracking() {
 LighthouseTracking::LighthouseTracking() {
 	vr::EVRInitError eError = vr::VRInitError_None;
 	m_pHMD = vr::VR_Init(&eError, vr::VRApplication_Background);
+	char buf[1024];
 
 	if (eError != vr::VRInitError_None)
 	{
 		m_pHMD = NULL;
-		char buf[1024];
 		sprintf_s(buf, sizeof(buf), "Unable to init VR runtime: %s", vr::VR_GetVRInitErrorAsEnglishDescription(eError));
 		printf_s(buf);
 		exit(EXIT_FAILURE);
 	}
+
+	const char *handle = "/user/hand/left/input/trackpad";
+	vr::EVRInputError inputError = vr::VRInput()->GetInputSourceHandle(handle, &leftHandInputHandle);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get input source handle: %d", inputError);
+	}
+	sprintf_s(buf, sizeof(buf), "Successfully got handle: %d", leftHandInputHandle);
+
 }
 
 /*
@@ -59,7 +67,7 @@ bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1)
 	}
 	else {
 		// ... or B) continous parsint of tracking data irrespective of events
-		std::cout << std::endl << "Parsing next frame...";
+		//std::cout << std::endl << "Parsing next frame...";
 
 		ParseTrackingFrame(filterIndex);
 	}
@@ -236,9 +244,16 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Untouch Device: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
 				break;
-			case vr::EVREventType::VREvent_ButtonPress:
+			case vr::EVREventType::VREvent_ButtonPress: {
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Press Device: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
+
+				vr::VREvent_Data_t vrevent_data = event.data;
+				vr::VREvent_Controller_t vrevent_controller = vrevent_data.controller;
+				sprintf_s(buf, sizeof(buf), "(OpenVR) controller button: %d\n", vrevent_controller.button);
+				printf_s(buf);
+			}
+
 				break;
 			case vr::EVREventType::VREvent_ButtonUnpress:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Release Device: %d\n", event.trackedDeviceIndex);
@@ -319,6 +334,35 @@ vr::HmdVector3_t LighthouseTracking::GetPosition(vr::HmdMatrix34_t matrix) {
 	return vector;
 }
 
+void LighthouseTracking::StoreLeftControllerPosition(vr::HmdVector3_t vector) {
+	m_vecLeftController.v[0] = vector.v[0];
+	m_vecLeftController.v[1] = vector.v[1];
+	m_vecLeftController.v[2] = vector.v[2];
+}
+
+void LighthouseTracking::StoreRightControllerPosition(vr::HmdVector3_t vector) {
+	m_vecRightController.v[0] = vector.v[0];
+	m_vecRightController.v[1] = vector.v[1];
+	m_vecRightController.v[2] = vector.v[2];
+}
+
+vr::HmdVector3_t LighthouseTracking::GetLeftControllerPosition() {
+	return m_vecLeftController;
+}
+
+vr::HmdVector3_t LighthouseTracking::GetRightControllerPosition() {
+	return m_vecRightController;
+}
+
+
+vr::HmdVector3_t LighthouseTracking::GetControllerPositionDelta() {
+	vr::HmdVector3_t vecDiff;
+	vecDiff.v[0] = m_vecLeftController.v[0] - m_vecRightController.v[0];
+	vecDiff.v[1] = m_vecLeftController.v[1] - m_vecRightController.v[1];
+	vecDiff.v[2] = m_vecLeftController.v[2] - m_vecRightController.v[2];
+	return vecDiff;
+}
+
 /*
 * Parse a Frame with data from the tracking system
 *
@@ -336,8 +380,8 @@ vr::HmdVector3_t LighthouseTracking::GetPosition(vr::HmdMatrix34_t matrix) {
 */
 void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
-
 	char buf[1024];
+	bool result;
 
 	// Process SteamVR device states
 	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
@@ -347,8 +391,13 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			continue;
 		}
 
-		if (filterIndex != unDevice)
-			continue;
+		/*
+		sprintf_s(buf, sizeof(buf), "(OpenVR) parsing next frame %d\n", unDevice);
+		printf_s(buf);
+		*/
+
+		//if (filterIndex != unDevice)
+		//	continue;
 
 		vr::TrackedDevicePose_t trackedDevicePose;
 		vr::TrackedDevicePose_t *devicePose = &trackedDevicePose;
@@ -377,12 +426,15 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		// Get what type of device it is and work with its data
 		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
 
-		sprintf_s(buf, sizeof(buf), "\nClass%d\n", trackedDeviceClass);
-		printf_s(buf);
+		//sprintf_s(buf, sizeof(buf), "\nClass%d\n", trackedDeviceClass);
+		//printf_s(buf);
 
 		switch (trackedDeviceClass) {
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 			// print stuff for the HMD here, see controller stuff in next case block
+
+			sprintf_s(buf, sizeof(buf), "(OpenVR) HMD %d\n", unDevice);
+			printf_s(buf);
 
 			// get pose relative to the safe bounds defined by the user
 			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
@@ -398,48 +450,62 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			bPoseValid = trackedDevicePose.bPoseIsValid;
 
 			// print the tracking data
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "\nHMD\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
-			printf_s(buf);
-			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-			printf_s(buf);
+			if (printHmdTrackingData) {
+				sprintf_s(buf, sizeof(buf), "\nHMD\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
+				printf_s(buf);
+				sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+				printf_s(buf);
+			}
 
 			// and print some more info to the user about the state of the device/pose
 			switch (eTrackingResult) {
 			case vr::ETrackingResult::TrackingResult_Uninitialized:
-				sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-				printf_s(buf);
+				if (printHmdTrackingData) {
+					sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
+					printf_s(buf);
+				}
 				break;
 			case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-				sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-				printf_s(buf);
+				if (printHmdTrackingData) {
+					sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
+					printf_s(buf);
+				}
 				break;
 			case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-				sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-				printf_s(buf);
+				if (printHmdTrackingData) {
+					sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
+					printf_s(buf);
+				}
 				break;
 			case vr::ETrackingResult::TrackingResult_Running_OK:
-				sprintf_s(buf, sizeof(buf), "Running OK\n");
-				printf_s(buf);
+				if (printHmdTrackingData) {
+					sprintf_s(buf, sizeof(buf), "Running OK\n");
+					printf_s(buf);
+				}
 				break;
 			case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-				sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-				printf_s(buf);
-
+				if (printHmdTrackingData) {
+					sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
+					printf_s(buf);
+				}
 				break;
 			default:
-				sprintf_s(buf, sizeof(buf), "Default\n");
-				printf_s(buf);
+				if (printHmdTrackingData) {
+					sprintf_s(buf, sizeof(buf), "Default\n");
+					printf_s(buf);
+				}
 				break;
 			}
 
 			// print if the pose is valid or not
-			if (bPoseValid)
-				sprintf_s(buf, sizeof(buf), "Valid pose\n");
-			else
-				sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-			printf_s(buf);
+			if (printHmdTrackingData) {
 
+				if (bPoseValid)
+					sprintf_s(buf, sizeof(buf), "Valid pose\n");
+				else
+					sprintf_s(buf, sizeof(buf), "Invalid pose\n");
+				printf_s(buf);
+			}
 			break;
 
 
@@ -447,7 +513,13 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			// Simliar to the HMD case block above, please adapt as you like
 			// to get away with code duplication and general confusion
 
-			vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), &trackedDevicePose);
+			sprintf_s(buf, sizeof(buf), "(OpenVR) Controller %d\n", unDevice);
+			printf_s(buf);
+
+			result = vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), &trackedDevicePose);
+
+			sprintf_s(buf, sizeof(buf), "(OpenVR) Result %d\n", result);
+			printf_s(buf);
 
 			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
 			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
@@ -461,8 +533,8 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice)) {
 			case vr::TrackedControllerRole_Invalid:
 				// invalid hand...
-				sprintf_s(buf, sizeof(buf), "\nInvalid Hand\n");
-				printf_s(buf);
+				//sprintf_s(buf, sizeof(buf), "\nInvalid Hand\n");
+				//printf_s(buf);
 
 
 				/*
@@ -478,98 +550,130 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			//
 			case vr::TrackedControllerRole_LeftHand:
 
-				sprintf_s(buf, sizeof(buf), "\nLeft Controller i: %d index: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand), position.v[0], position.v[1], position.v[2]);
-				printf_s(buf);
+				if (printLeftControllerTrackingData) {
+					sprintf_s(buf, sizeof(buf), "\nLeft Controller i: %d index: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand), position.v[0], position.v[1], position.v[2]);
+					printf_s(buf);
 
-				sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-				printf_s(buf);
+					sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+					printf_s(buf);
 
-				sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
-				printf_s(buf);
+					sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
+					printf_s(buf);
+				}
+
+				StoreLeftControllerPosition(position);
 
 				switch (eTrackingResult) {
 				case vr::ETrackingResult::TrackingResult_Uninitialized:
-					sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-					printf_s(buf);
+					if (printLeftControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-					sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-					printf_s(buf);
+					if (printLeftControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-					sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-					printf_s(buf);
+					if (printLeftControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Running_OK:
-					sprintf_s(buf, sizeof(buf), "Running OK\n");
-					printf_s(buf);
+					if (printLeftControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Running OK\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-					sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-					printf_s(buf);
-
+					if (printLeftControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
+						printf_s(buf);
+					}
 					break;
 				default:
-					sprintf_s(buf, sizeof(buf), "Default\n");
-					printf_s(buf);
+					if (printLeftControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Default\n");
+						printf_s(buf);
+					}
 					break;
 				}
 
-				if (bPoseValid)
-					sprintf_s(buf, sizeof(buf), "Valid pose\n");
-				else
-					sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-				printf_s(buf);
-
+				if (printLeftControllerTrackingData) {
+					if (bPoseValid)
+						sprintf_s(buf, sizeof(buf), "Valid pose\n");
+					else
+						sprintf_s(buf, sizeof(buf), "Invalid pose\n");
+					printf_s(buf);
+				}
 				break;
 
 			case vr::TrackedControllerRole_RightHand:
 				// incomplete code, look at left hand for reference
 
-				sprintf_s(buf, sizeof(buf), "\nRightController i: %d index: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand), position.v[0], position.v[1], position.v[2]);
-				printf_s(buf);
+				if (printRightControllerTrackingData) {
+					sprintf_s(buf, sizeof(buf), "\nRightController i: %d index: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand), position.v[0], position.v[1], position.v[2]);
+					printf_s(buf);
 
-				sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-				printf_s(buf);
+					sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
+					printf_s(buf);
 
-				sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
-				printf_s(buf);
+					sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
+					printf_s(buf);
+				}
+
+				StoreRightControllerPosition(position);
 
 				switch (eTrackingResult) {
 				case vr::ETrackingResult::TrackingResult_Uninitialized:
-					sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-					printf_s(buf);
+					if (printRightControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-					sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-					printf_s(buf);
+					if (printRightControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-					sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-					printf_s(buf);
+					if (printRightControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Running_OK:
-					sprintf_s(buf, sizeof(buf), "Running OK\n");
-					printf_s(buf);
+					if (printRightControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Running OK\n");
+						printf_s(buf);
+					}
 					break;
 				case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-					sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-					printf_s(buf);
-
+					if (printRightControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
+						printf_s(buf);
+					}
 					break;
 				default:
-					sprintf_s(buf, sizeof(buf), "Default\n");
-					printf_s(buf);
+					if (printRightControllerTrackingData) {
+						sprintf_s(buf, sizeof(buf), "Default\n");
+						printf_s(buf);
+					}
 					break;
 				}
 
-				if (bPoseValid)
-					sprintf_s(buf, sizeof(buf), "Valid pose\n");
-				else
-					sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-				printf_s(buf);
+				if (printRightControllerTrackingData) {
 
-
+					if (bPoseValid)
+						sprintf_s(buf, sizeof(buf), "Valid pose\n");
+					else
+						sprintf_s(buf, sizeof(buf), "Invalid pose\n");
+					printf_s(buf);
+				}
 
 				break;
 
@@ -583,6 +687,9 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 		case vr::TrackedDeviceClass_GenericTracker:
 			//char buf[1024];
+
+			sprintf_s(buf, sizeof(buf), "(OpenVR) Generic Tracker %d\n", unDevice);
+			printf_s(buf);
 
 			vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), &trackedDevicePose);
 
@@ -611,8 +718,10 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 		case vr::TrackedDeviceClass_TrackingReference:
 			// incomplete code, only here for switch reference
-			sprintf_s(buf, sizeof(buf), "Camera / Base Station");
-			printf_s(buf);
+			if (printBasestationTrackingData) {
+				sprintf_s(buf, sizeof(buf), "Camera / Base Station");
+				printf_s(buf);
+			}
 			break;
 
 

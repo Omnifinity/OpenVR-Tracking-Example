@@ -81,7 +81,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>openvr_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\pt\Documents\Visual Studio 2013\Projects\openvr-v1.0.12\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\pt\Documents\Visual Studio 2013\Projects\openvr\lib\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>REM copy /Y "$(TargetPath)" "\\192.168.1.51\Users\Public\dev\R8_v2.3.2-Beta-dev\vive_debugger\$(TargetName)$(TargetExt)"

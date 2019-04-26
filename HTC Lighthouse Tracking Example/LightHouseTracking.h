@@ -26,8 +26,6 @@ private:
 
 	vr::VRActionHandle_t m_actionDemoHandLeft = vr::k_ulInvalidActionHandle;
 	const char *actionDemoHandLeftPath = "/actions/demo/in/Hand_Left";
-	// no crash - but invalid handle, error 3
-	//const char *actionDemoHandLeftPath = "/actions/demo/in/Hand_Left/pose/raw";
 
 	vr::VRActionHandle_t m_actionDemoHandRight = vr::k_ulInvalidActionHandle;
 	const char *actionDemoHandRightPath = "/actions/demo/in/Hand_Right";

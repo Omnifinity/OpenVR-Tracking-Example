@@ -39,4 +39,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Release\win32\vive_debugger_actions.json" />
+    <None Include="..\Release\win32\vive_debugger_bindings_vive_controller.json" />
+  </ItemGroup>
 </Project>

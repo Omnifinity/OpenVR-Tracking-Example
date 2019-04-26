@@ -118,7 +118,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				}
 
 				// a delay to not overheat your computer... :)
-				Sleep(1);
+				Sleep(2);
 			}
 		}
 

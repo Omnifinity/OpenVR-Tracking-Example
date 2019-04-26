@@ -601,7 +601,7 @@ void LighthouseTracking::PrintDevices() {
 	sprintf_s(buf, sizeof(buf), "\nDevice list:\n---------------------------\n");
 	printf_s(buf);
 
-	// Process SteamVR device states
+	// Loop over all conntected devices and print some stuff about them
 	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
 	{
 		// if no HMD is connected in slot 0 just skip the rest of the code
@@ -616,71 +616,48 @@ void LighthouseTracking::PrintDevices() {
 			// print stuff for the HMD here, see controller stuff in next case block
 
 			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "Device %d: [HMD]", unDevice);
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [HMD]", unDevice);
 			printf_s(buf);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-			// Simliar to the HMD case block above, please adapt as you like
-			// to get away with code duplication and general confusion
-
-			//char buf[1024];
-			switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice)) {
-			case vr::TrackedControllerRole_Invalid:
-				// invalid hand...
-
-				sprintf_s(buf, sizeof(buf), "Device %d: [Invalid Controller]", unDevice);
-				printf_s(buf);
-				break;
-
-			case vr::TrackedControllerRole_LeftHand:
-				sprintf_s(buf, sizeof(buf), "Device %d: [Controller - Left]", unDevice);
-				printf_s(buf);
-				break;
-
-			case vr::TrackedControllerRole_RightHand:
-				sprintf_s(buf, sizeof(buf), "Device %d: [Controller - Right]", unDevice);
-				printf_s(buf);
-				break;
-
-			case vr::TrackedControllerRole_Treadmill:
-				sprintf_s(buf, sizeof(buf), "Device %d: [Treadmill]", unDevice);
-				printf_s(buf);
-				break;
-			}
+			// do stuff for a controller here
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [Controller]", unDevice);
+			printf_s(buf);
 
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_GenericTracker:
-			// print stuff for the HMD here, see controller stuff in next case block
+			// do stuff for a generic tracker here
 
-			sprintf_s(buf, sizeof(buf), "Device %d: [GenericTracker]", unDevice);
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [GenericTracker]", unDevice);
 			printf_s(buf);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_TrackingReference:
-			// print stuff for the HMD here, see controller stuff in next case block
+			/// do stuff for a tracking reference here
 
-			sprintf_s(buf, sizeof(buf), "Device %d: [TrackingReference]", unDevice);
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [TrackingReference]", unDevice);
 			printf_s(buf);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_DisplayRedirect:
-			// print stuff for the HMD here, see controller stuff in next case block
+			/// do stuff for a display redirect here
 
-			sprintf_s(buf, sizeof(buf), "Device %d: [DisplayRedirect]", unDevice);
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [DisplayRedirect]", unDevice);
 			printf_s(buf);
 			break;
 
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
-			// print stuff for the HMD here, see controller stuff in next case block
+			// do stuff for an invalid class
 
-			sprintf_s(buf, sizeof(buf), "Device %d: [Invalid]", unDevice);
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [Invalid]", unDevice);
 			printf_s(buf);
 			break;
 
 		}
 
+		// print some of the meta data for the device
 		char manufacturer[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ManufacturerName_String, manufacturer, sizeof(manufacturer));
 

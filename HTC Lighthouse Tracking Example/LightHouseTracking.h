@@ -15,10 +15,43 @@ private:
 	Matrix4 m_rmat4DevicePose[vr::k_unMaxTrackedDeviceCount];
 
 	// Handles for the new IVRInput
-	vr::VRInputValueHandle_t leftHandInputHandle;
-	vr::VRInputValueHandle_t rightHandInputHandle;
-	vr::VRInputValueHandle_t treadmillInputHandle;
+	vr::VRActionSetHandle_t m_actionSetDemo = vr::k_ulInvalidActionSetHandle;
+	const char *actionSetDemoPath = "/actions/demo";
 
+	vr::VRActionHandle_t m_actionAnalogInput = vr::k_ulInvalidActionHandle;
+	const char *actionDemoAnalogInputPath = "/actions/demo/in/AnalogInput";
+
+	vr::VRActionHandle_t m_actionHideCubes = vr::k_ulInvalidActionHandle;
+	const char *actionDemoHideCubesPath = "/actions/demo/in/HideCubes";
+
+	vr::VRActionHandle_t m_actionDemoHandLeft = vr::k_ulInvalidActionHandle;
+	const char *actionDemoHandLeftPath = "/actions/demo/in/Hand_Left";
+	// no crash - but invalid handle, error 3
+	//const char *actionDemoHandLeftPath = "/actions/demo/in/Hand_Left/pose/raw";
+
+	vr::VRActionHandle_t m_actionDemoHandRight = vr::k_ulInvalidActionHandle;
+	const char *actionDemoHandRightPath = "/actions/demo/in/Hand_Right";
+
+	vr::VRInputValueHandle_t m_inputHandLeftPath = vr::k_ulInvalidInputValueHandle;
+	const char *inputHandLeftPath = "/user/hand/left";
+
+	struct ControllerInfo_t
+	{
+		vr::VRInputValueHandle_t m_source = vr::k_ulInvalidInputValueHandle;
+		vr::VRActionHandle_t m_actionPose = vr::k_ulInvalidActionHandle;
+		vr::VRActionHandle_t m_actionHaptic = vr::k_ulInvalidActionHandle;
+		Matrix4 m_rmat4Pose;
+		//CGLRenderModel *m_pRenderModel = nullptr;
+		std::string m_sRenderModelName;
+		bool m_bShowController;
+	};
+
+	enum EHand
+	{
+		Left = 0,
+		Right = 1,
+	};
+	ControllerInfo_t m_Hand[2];
 
 	vr::HmdVector3_t m_vecLeftController = {};
 	vr::HmdVector3_t m_vecRightController = {};
@@ -41,6 +74,8 @@ private:
 public:
 	~LighthouseTracking();
 	LighthouseTracking();
+
+	bool BInitCompositor();
 
 	// Main loop that listens for openvr events and calls process and parse routines, if false the service has quit
 	bool RunProcedure(bool bWaitForEvents, int filterIndex);

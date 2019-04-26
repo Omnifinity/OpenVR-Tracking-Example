@@ -31,9 +31,8 @@ LighthouseTracking::LighthouseTracking() {
 		exit(EXIT_FAILURE);
 	}
 
-
-	if (!BInitCompositor())
-	{
+	// Ensure VR Compositor is avail, otherwise getting poses causes a crash (openvr v1.3.22)
+	if (!BInitCompositor()) {
 		//printf("%s - Failed to initialize VR Compositor!\n", __FUNCTION__);
 		sprintf_s(buf, sizeof(buf), "%s - Failed to initialize VR Compositor!", __FUNCTION__);
 		printf_s(buf);
@@ -44,6 +43,7 @@ LighthouseTracking::LighthouseTracking() {
 		printf_s(buf);
 	}
 
+	// Prepare manifest file
 	const char *manifestPath = "C:/Users/pt/Documents/Visual Studio 2013/Projects/HTC Lighthouse Tracking Example/Release/win32/vive_debugger_actions.json";
 	vr::EVRInputError inputError = vr::VRInput()->SetActionManifestPath(manifestPath);
 	if (inputError != vr::VRInputError_None) {
@@ -66,6 +66,7 @@ LighthouseTracking::LighthouseTracking() {
 		printf_s(buf);
 	}
 
+	// handle for left controller pose
 	inputError = vr::VRInput()->GetActionHandle(actionDemoHandLeftPath, &m_actionDemoHandLeft);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
@@ -76,6 +77,7 @@ LighthouseTracking::LighthouseTracking() {
 		printf_s(buf);
 	}
 
+	// handle for right controller pose
 	inputError = vr::VRInput()->GetActionHandle(actionDemoHandRightPath, &m_actionDemoHandRight);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
@@ -86,9 +88,29 @@ LighthouseTracking::LighthouseTracking() {
 		printf_s(buf);
 	}
 
+	// handle for analog trackpad action
+	inputError = vr::VRInput()->GetActionHandle(actionDemoAnalogInputPath, &m_actionAnalogInput);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoAnalogInputPath, m_actionAnalogInput);
+		printf_s(buf);
+	}
 
+	// handle for a hide cube action
+	inputError = vr::VRInput()->GetActionHandle(actionDemoHideCubesPath, &m_actionHideCubes);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHideCubesPath, m_actionHideCubes);
+		printf_s(buf);
+	}
 
-	// not used atm
+	// handle for controller pose source - not used atm
 	inputError = vr::VRInput()->GetInputSourceHandle(inputHandLeftPath, &m_inputHandLeftPath);
 	if (inputError != vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "Error: Unable to get input handle: %d\n", inputError);
@@ -100,27 +122,6 @@ LighthouseTracking::LighthouseTracking() {
 	}
 
 
-
-
-	inputError = vr::VRInput()->GetActionHandle(actionDemoAnalogInputPath, &m_actionAnalogInput);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoAnalogInputPath, m_actionAnalogInput);
-		printf_s(buf);
-	}
-
-	inputError = vr::VRInput()->GetActionHandle(actionDemoHideCubesPath, &m_actionHideCubes);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHideCubesPath, m_actionHideCubes);
-		printf_s(buf);
-	}
 }
 
 //-----------------------------------------------------------------------------
@@ -489,30 +490,10 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	// Process SteamVR action state
 	// UpdateActionState is called each frame to update the state of the actions themselves. The application
 	// controls which action sets are active with the provided array of VRActiveActionSet_t structs.
-	int codeSectionToExecute = 0;
 
-	switch (codeSectionToExecute) {
-	case 0:
-	{
-		vr::VRActiveActionSet_t actionSet = { 0 };
-		actionSet.ulActionSet = m_actionSetDemo;
-		inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
-	}
-	break;
-	case 1:
-	{
-		vr::VRActiveActionSet_t actionSet = { 0 };
-		actionSet.ulActionSet = m_actionDemoHandLeft;
-		inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
-	}
-	break;
-	default:
-		sprintf_s(buf, sizeof(buf), "Error: Unsupported code section, aborting...\n");
-		printf_s(buf);
-		exit(EXIT_FAILURE);
-		break;
-	}
-
+	vr::VRActiveActionSet_t actionSet = { 0 };
+	actionSet.ulActionSet = m_actionSetDemo;
+	inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
 	if (inputError == vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Ok\n");
 		printf_s(buf);
@@ -578,13 +559,9 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		printf_s(buf);
 	}
 
-	// comment this line to hang the program when using mode 1
-	//if (codeSectionToExecute == 0) return;
-
 	if (!analogData.bActive) {
 		sprintf_s(buf, sizeof(buf), "Analog bind not Active..\n");
 		printf_s(buf);
-		//return;
 	}
 	else {
 		sprintf_s(buf, sizeof(buf), "Analog bind is Active..\n");

@@ -609,12 +609,6 @@ void LighthouseTracking::PrintDevices() {
 		if (!m_pHMD->IsTrackedDeviceConnected(unDevice))
 			continue;
 
-		vr::TrackedDevicePose_t trackedDevicePose;
-		vr::TrackedDevicePose_t *devicePose = &trackedDevicePose;
-
-		vr::VRControllerState_t controllerState;
-		vr::VRControllerState_t *ontrollerState_ptr = &controllerState;
-
 		// Get what type of device it is and work with its data
 		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
 		switch (trackedDeviceClass) {

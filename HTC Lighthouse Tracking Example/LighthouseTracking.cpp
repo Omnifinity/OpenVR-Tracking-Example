@@ -31,13 +31,113 @@ LighthouseTracking::LighthouseTracking() {
 		exit(EXIT_FAILURE);
 	}
 
-	const char *handle = "/user/hand/left/input/trackpad";
-	vr::EVRInputError inputError = vr::VRInput()->GetInputSourceHandle(handle, &leftHandInputHandle);
-	if (inputError != vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "Error: Unable to get input source handle: %d", inputError);
-	}
-	sprintf_s(buf, sizeof(buf), "Successfully got handle: %d", leftHandInputHandle);
 
+	if (!BInitCompositor())
+	{
+		//printf("%s - Failed to initialize VR Compositor!\n", __FUNCTION__);
+		sprintf_s(buf, sizeof(buf), "%s - Failed to initialize VR Compositor!", __FUNCTION__);
+		printf_s(buf);
+		exit(EXIT_FAILURE);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully initialized VR Compositor\n");
+		printf_s(buf);
+	}
+
+	const char *manifestPath = "C:/Users/pt/Documents/Visual Studio 2013/Projects/HTC Lighthouse Tracking Example/Release/win32/vive_debugger_actions.json";
+	vr::EVRInputError inputError = vr::VRInput()->SetActionManifestPath(manifestPath);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to set manifest path: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully set manifest path: %s\n", manifestPath);
+		printf_s(buf);
+	}
+
+	// Handles for the new IVRInput
+	inputError = vr::VRInput()->GetActionSetHandle(actionSetDemoPath, &m_actionSetDemo);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action set handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s action set handle: %d\n", actionSetDemoPath, m_actionSetDemo);
+		printf_s(buf);
+	}
+
+	inputError = vr::VRInput()->GetActionHandle(actionDemoHandLeftPath, &m_actionDemoHandLeft);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHandLeftPath, m_actionDemoHandLeft);
+		printf_s(buf);
+	}
+
+	inputError = vr::VRInput()->GetActionHandle(actionDemoHandRightPath, &m_actionDemoHandRight);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHandRightPath, m_actionDemoHandRight);
+		printf_s(buf);
+	}
+
+
+
+	// not used atm
+	inputError = vr::VRInput()->GetInputSourceHandle(inputHandLeftPath, &m_inputHandLeftPath);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get input handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s input handle: %d\n", inputHandLeftPath, m_inputHandLeftPath);
+		printf_s(buf);
+	}
+
+
+
+
+	inputError = vr::VRInput()->GetActionHandle(actionDemoAnalogInputPath, &m_actionAnalogInput);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoAnalogInputPath, m_actionAnalogInput);
+		printf_s(buf);
+	}
+
+	inputError = vr::VRInput()->GetActionHandle(actionDemoHideCubesPath, &m_actionHideCubes);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoHideCubesPath, m_actionHideCubes);
+		printf_s(buf);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Initialize Compositor. Returns true if the compositor was
+//          successfully initialized, false otherwise.
+//-----------------------------------------------------------------------------
+bool LighthouseTracking::BInitCompositor()
+{
+	vr::EVRInitError peError = vr::VRInitError_None;
+
+	if (!vr::VRCompositor())
+	{
+		printf("Compositor initialization failed. See log file for details\n");
+		return false;
+	}
+
+	return true;
 }
 
 /*
@@ -381,357 +481,161 @@ vr::HmdVector3_t LighthouseTracking::GetControllerPositionDelta() {
 void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 	char buf[1024];
-	bool result;
+	vr::EVRInputError inputError;
 
-	// Process SteamVR device states
-	for (vr::TrackedDeviceIndex_t unDevice = 0; unDevice < vr::k_unMaxTrackedDeviceCount; unDevice++)
+	sprintf_s(buf, sizeof(buf), "\n");
+	printf_s(buf);
+
+	// Process SteamVR action state
+	// UpdateActionState is called each frame to update the state of the actions themselves. The application
+	// controls which action sets are active with the provided array of VRActiveActionSet_t structs.
+	int codeSectionToExecute = 0;
+
+	switch (codeSectionToExecute) {
+	case 0:
 	{
-		// if not connected just skip the rest of the routine
-		if (!m_pHMD->IsTrackedDeviceConnected(unDevice)) {
-			continue;
-		}
-
-		/*
-		sprintf_s(buf, sizeof(buf), "(OpenVR) parsing next frame %d\n", unDevice);
+		vr::VRActiveActionSet_t actionSet = { 0 };
+		actionSet.ulActionSet = m_actionSetDemo;
+		inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
+	}
+	break;
+	case 1:
+	{
+		vr::VRActiveActionSet_t actionSet = { 0 };
+		actionSet.ulActionSet = m_actionDemoHandLeft;
+		inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
+	}
+	break;
+	default:
+		sprintf_s(buf, sizeof(buf), "Error: Unsupported code section, aborting...\n");
 		printf_s(buf);
-		*/
+		exit(EXIT_FAILURE);
+		break;
+	}
 
-		//if (filterIndex != unDevice)
-		//	continue;
+	if (inputError == vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Ok\n");
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Error: %d\n", inputError);
+		printf_s(buf);
+	}
 
-		vr::TrackedDevicePose_t trackedDevicePose;
-		vr::TrackedDevicePose_t *devicePose = &trackedDevicePose;
+	/*
+	// some more debugging
+	sprintf_s(buf, sizeof(buf), "UpdateActionState() handle %d\n", actionSet.ulActionSet);
+	printf_s(buf);
+	sprintf_s(buf, sizeof(buf), "UpdateActionState() error: %d\n", inputError);
+	printf_s(buf);
+	*/
 
-		vr::VRControllerState_t controllerState;
-		vr::VRControllerState_t *ontrollerState_ptr = &controllerState;
+	// Get analog data
+	vr::InputAnalogActionData_t analogData;
+	inputError = vr::VRInput()->GetAnalogActionData(m_actionAnalogInput, &analogData, sizeof(analogData), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None)
+	{
+		sprintf_s(buf, sizeof(buf), "%s | GetAnalogActionData() Ok\n", actionDemoAnalogInputPath);
+		printf_s(buf);
 
-		vr::HmdVector3_t position;
-		vr::HmdQuaternion_t quaternion;
-
-
-		/*
-		if (vr::VRSystem()->IsInputFocusCapturedByAnotherProcess()) {
-			char buf[1024];
-
-			sprintf_s(buf, sizeof(buf), "\nInput Focus by Another Process\n");
+		if (analogData.bActive) {
+			float m_vAnalogValue0 = analogData.x;
+			float m_vAnalogValue1 = analogData.y;
+			sprintf_s(buf, sizeof(buf), "%s | x: %f  y:%f\n", actionDemoAnalogInputPath, m_vAnalogValue0, m_vAnalogValue1);
 			printf_s(buf);
 		}
-		*/
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | pose not active\n", actionDemoAnalogInputPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetAnalogActionData() Not Ok. Error: %d\n", actionDemoAnalogInputPath, inputError);
+		printf_s(buf);
+	}
 
-		bool bPoseValid = trackedDevicePose.bPoseIsValid;
-		vr::HmdVector3_t vVel;
-		vr::HmdVector3_t vAngVel;
-		vr::ETrackingResult eTrackingResult;
 
-		// Get what type of device it is and work with its data
-		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
+	// Get digital data
+	vr::InputDigitalActionData_t digitalData;
+	inputError = vr::VRInput()->GetDigitalActionData(m_actionHideCubes, &digitalData, sizeof(digitalData), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None)
+	{
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Ok\n", actionDemoHideCubesPath);
+		printf_s(buf);
 
-		//sprintf_s(buf, sizeof(buf), "\nClass%d\n", trackedDeviceClass);
-		//printf_s(buf);
+		if (digitalData.bActive) {
+			bool m_vDigitalValue0 = digitalData.bState;
+			sprintf_s(buf, sizeof(buf), "%s | Res: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
+			printf_s(buf);
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | bool not active\n", actionDemoHideCubesPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoHideCubesPath, inputError);
+		printf_s(buf);
+	}
 
-		switch (trackedDeviceClass) {
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
-			// print stuff for the HMD here, see controller stuff in next case block
+	// comment this line to hang the program when using mode 1
+	//if (codeSectionToExecute == 0) return;
 
-			sprintf_s(buf, sizeof(buf), "(OpenVR) HMD %d\n", unDevice);
+	if (!analogData.bActive) {
+		sprintf_s(buf, sizeof(buf), "Analog bind not Active..\n");
+		printf_s(buf);
+		//return;
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Analog bind is Active..\n");
+		printf_s(buf);
+	}
+
+	// get pose data
+	vr::InputPoseActionData_t poseData;
+	inputError = vr::VRInput()->GetPoseActionData(m_actionDemoHandLeft, vr::TrackingUniverseStanding, 0, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Ok\n", actionDemoHandLeftPath);
+		printf_s(buf);
+
+		if (poseData.bActive) {
+			sprintf_s(buf, sizeof(buf), "%s | pose Active\n", actionDemoHandLeftPath);
 			printf_s(buf);
 
-			// get pose relative to the safe bounds defined by the user
-			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
+			vr::VRInputValueHandle_t activeOrigin = poseData.activeOrigin;
+			bool bPoseIsValid = poseData.pose.bPoseIsValid;
+			bool bDeviceIsConnected = poseData.pose.bDeviceIsConnected;
+			sprintf_s(buf, sizeof(buf), "Origin: %d Validity: %d DeviceIsConnected: %d\n", activeOrigin, bPoseIsValid, bDeviceIsConnected);
+			printf_s(buf);
+
+
+		/* Code below is old ---> */
+			vr::HmdVector3_t position;
+			vr::HmdQuaternion_t quaternion;
 
 			// get the position and rotation
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			// get some data
-			vVel = trackedDevicePose.vVelocity;
-			vAngVel = trackedDevicePose.vAngularVelocity;
-			eTrackingResult = trackedDevicePose.eTrackingResult;
-			bPoseValid = trackedDevicePose.bPoseIsValid;
+			position = GetPosition(poseData.pose.mDeviceToAbsoluteTracking);
+			quaternion = GetRotation(poseData.pose.mDeviceToAbsoluteTracking);
 
 			// print the tracking data
-			if (printHmdTrackingData) {
-				sprintf_s(buf, sizeof(buf), "\nHMD\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
-				printf_s(buf);
-				sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-				printf_s(buf);
-			}
-
-			// and print some more info to the user about the state of the device/pose
-			switch (eTrackingResult) {
-			case vr::ETrackingResult::TrackingResult_Uninitialized:
-				if (printHmdTrackingData) {
-					sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-					printf_s(buf);
-				}
-				break;
-			case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-				if (printHmdTrackingData) {
-					sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-					printf_s(buf);
-				}
-				break;
-			case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-				if (printHmdTrackingData) {
-					sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-					printf_s(buf);
-				}
-				break;
-			case vr::ETrackingResult::TrackingResult_Running_OK:
-				if (printHmdTrackingData) {
-					sprintf_s(buf, sizeof(buf), "Running OK\n");
-					printf_s(buf);
-				}
-				break;
-			case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-				if (printHmdTrackingData) {
-					sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-					printf_s(buf);
-				}
-				break;
-			default:
-				if (printHmdTrackingData) {
-					sprintf_s(buf, sizeof(buf), "Default\n");
-					printf_s(buf);
-				}
-				break;
-			}
-
-			// print if the pose is valid or not
-			if (printHmdTrackingData) {
-
-				if (bPoseValid)
-					sprintf_s(buf, sizeof(buf), "Valid pose\n");
-				else
-					sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-				printf_s(buf);
-			}
-			break;
-
-
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_Controller:
-			// Simliar to the HMD case block above, please adapt as you like
-			// to get away with code duplication and general confusion
-
-			sprintf_s(buf, sizeof(buf), "(OpenVR) Controller %d\n", unDevice);
+			//if (printHmdTrackingData) {
+			sprintf_s(buf, sizeof(buf), "\nHMD\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
 			printf_s(buf);
-
-			result = vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), &trackedDevicePose);
-
-			sprintf_s(buf, sizeof(buf), "(OpenVR) Result %d\n", result);
+			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 			printf_s(buf);
-
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			vVel = trackedDevicePose.vVelocity;
-			vAngVel = trackedDevicePose.vAngularVelocity;
-			eTrackingResult = trackedDevicePose.eTrackingResult;
-			bPoseValid = trackedDevicePose.bPoseIsValid;
-
-			//char buf[1024];
-			switch (vr::VRSystem()->GetControllerRoleForTrackedDeviceIndex(unDevice)) {
-			case vr::TrackedControllerRole_Invalid:
-				// invalid hand...
-				//sprintf_s(buf, sizeof(buf), "\nInvalid Hand\n");
-				//printf_s(buf);
+			//}
+		/* <--- End of old code */
 
 
-				/*
-				sprintf_s(buf, sizeof(buf), "\nInvalid role id: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, position.v[0], position.v[1], position.v[2]);
-				printf_s(buf);
-
-				sprintf_s(buf, sizeof(buf), "\nState: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
-				printf_s(buf);
-				*/
-
-				break;
-
-			//
-			case vr::TrackedControllerRole_LeftHand:
-
-				if (printLeftControllerTrackingData) {
-					sprintf_s(buf, sizeof(buf), "\nLeft Controller i: %d index: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand), position.v[0], position.v[1], position.v[2]);
-					printf_s(buf);
-
-					sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-					printf_s(buf);
-
-					sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
-					printf_s(buf);
-				}
-
-				StoreLeftControllerPosition(position);
-
-				switch (eTrackingResult) {
-				case vr::ETrackingResult::TrackingResult_Uninitialized:
-					if (printLeftControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-					if (printLeftControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-					if (printLeftControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Running_OK:
-					if (printLeftControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Running OK\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-					if (printLeftControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-						printf_s(buf);
-					}
-					break;
-				default:
-					if (printLeftControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Default\n");
-						printf_s(buf);
-					}
-					break;
-				}
-
-				if (printLeftControllerTrackingData) {
-					if (bPoseValid)
-						sprintf_s(buf, sizeof(buf), "Valid pose\n");
-					else
-						sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-					printf_s(buf);
-				}
-				break;
-
-			case vr::TrackedControllerRole_RightHand:
-				// incomplete code, look at left hand for reference
-
-				if (printRightControllerTrackingData) {
-					sprintf_s(buf, sizeof(buf), "\nRightController i: %d index: %d\nx: %.2f y: %.2f z: %.2f\n", unDevice, vr::VRSystem()->GetTrackedDeviceIndexForControllerRole(vr::TrackedControllerRole_LeftHand), position.v[0], position.v[1], position.v[2]);
-					printf_s(buf);
-
-					sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
-					printf_s(buf);
-
-					sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
-					printf_s(buf);
-				}
-
-				StoreRightControllerPosition(position);
-
-				switch (eTrackingResult) {
-				case vr::ETrackingResult::TrackingResult_Uninitialized:
-					if (printRightControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Invalid tracking result\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Calibrating_InProgress:
-					if (printRightControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Calibrating in progress\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Calibrating_OutOfRange:
-					if (printRightControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Calibrating Out of range\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Running_OK:
-					if (printRightControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Running OK\n");
-						printf_s(buf);
-					}
-					break;
-				case vr::ETrackingResult::TrackingResult_Running_OutOfRange:
-					if (printRightControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "WARNING: Running Out of Range\n");
-						printf_s(buf);
-					}
-					break;
-				default:
-					if (printRightControllerTrackingData) {
-						sprintf_s(buf, sizeof(buf), "Default\n");
-						printf_s(buf);
-					}
-					break;
-				}
-
-				if (printRightControllerTrackingData) {
-
-					if (bPoseValid)
-						sprintf_s(buf, sizeof(buf), "Valid pose\n");
-					else
-						sprintf_s(buf, sizeof(buf), "Invalid pose\n");
-					printf_s(buf);
-				}
-
-				break;
-
-			default:
-				// incomplete code, only here for switch reference
-				sprintf_s(buf, sizeof(buf), "Not supported");
-				printf_s(buf);
-				break;
-			}
-			break;
-
-		case vr::TrackedDeviceClass_GenericTracker:
-			//char buf[1024];
-
-			sprintf_s(buf, sizeof(buf), "(OpenVR) Generic Tracker %d\n", unDevice);
-			printf_s(buf);
-
-			vr::VRSystem()->GetControllerStateWithPose(vr::TrackingUniverseStanding, unDevice, &controllerState, sizeof(controllerState), &trackedDevicePose);
-
-			// get pose relative to the safe bounds defined by the user
-			//vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &trackedDevicePose, 1);
-
-			// get the position and rotation
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			position = GetPosition(devicePose->mDeviceToAbsoluteTracking);
-			quaternion = GetRotation(devicePose->mDeviceToAbsoluteTracking);
-
-			vVel = trackedDevicePose.vVelocity;
-			vAngVel = trackedDevicePose.vAngularVelocity;
-			eTrackingResult = trackedDevicePose.eTrackingResult;
-			bPoseValid = trackedDevicePose.bPoseIsValid;
-
-			sprintf_s(buf, sizeof(buf), "\nGeneric Tracker\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
-			printf_s(buf);
-
-			sprintf_s(buf, sizeof(buf), "State: x: %.2f y: %.2f\n", controllerState.rAxis[0].x, controllerState.rAxis[0].y);
-			printf_s(buf);
-
-			break;
-
-		case vr::TrackedDeviceClass_TrackingReference:
-			// incomplete code, only here for switch reference
-			if (printBasestationTrackingData) {
-				sprintf_s(buf, sizeof(buf), "Camera / Base Station");
-				printf_s(buf);
-			}
-			break;
-
-
-		default: {
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "\nUnsupported class: %d\n", trackedDeviceClass);
-			printf_s(buf);
-			}
-			break;
 		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | pose not active\n", actionDemoHandLeftPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Call Not Ok. Error: %d\n", actionDemoHandLeftPath, inputError);
+		printf_s(buf);
 	}
 }
 

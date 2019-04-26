@@ -120,8 +120,6 @@ LighthouseTracking::LighthouseTracking() {
 		sprintf_s(buf, sizeof(buf), "Successfully got %s input handle: %d\n", inputHandLeftPath, m_inputHandLeftPath);
 		printf_s(buf);
 	}
-
-
 }
 
 //-----------------------------------------------------------------------------

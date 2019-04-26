@@ -73,6 +73,7 @@ public:
 	~LighthouseTracking();
 	LighthouseTracking();
 
+	// Initialize the VR Compositor
 	bool BInitCompositor();
 
 	// Main loop that listens for openvr events and calls process and parse routines, if false the service has quit

@@ -490,7 +490,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	// Process SteamVR action state
 	// UpdateActionState is called each frame to update the state of the actions themselves. The application
 	// controls which action sets are active with the provided array of VRActiveActionSet_t structs.
-
 	vr::VRActiveActionSet_t actionSet = { 0 };
 	actionSet.ulActionSet = m_actionSetDemo;
 	inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
@@ -502,14 +501,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Error: %d\n", inputError);
 		printf_s(buf);
 	}
-
-	/*
-	// some more debugging
-	sprintf_s(buf, sizeof(buf), "UpdateActionState() handle %d\n", actionSet.ulActionSet);
-	printf_s(buf);
-	sprintf_s(buf, sizeof(buf), "UpdateActionState() error: %d\n", inputError);
-	printf_s(buf);
-	*/
 
 	// Get analog data
 	vr::InputAnalogActionData_t analogData;
@@ -526,7 +517,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			printf_s(buf);
 		}
 		else {
-			sprintf_s(buf, sizeof(buf), "%s | pose not active\n", actionDemoAnalogInputPath);
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoAnalogInputPath);
 			printf_s(buf);
 		}
 	}
@@ -546,25 +537,16 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 		if (digitalData.bActive) {
 			bool m_vDigitalValue0 = digitalData.bState;
-			sprintf_s(buf, sizeof(buf), "%s | Res: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
+			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
 			printf_s(buf);
 		}
 		else {
-			sprintf_s(buf, sizeof(buf), "%s | bool not active\n", actionDemoHideCubesPath);
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoHideCubesPath);
 			printf_s(buf);
 		}
 	}
 	else {
 		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoHideCubesPath, inputError);
-		printf_s(buf);
-	}
-
-	if (!analogData.bActive) {
-		sprintf_s(buf, sizeof(buf), "Analog bind not Active..\n");
-		printf_s(buf);
-	}
-	else {
-		sprintf_s(buf, sizeof(buf), "Analog bind is Active..\n");
 		printf_s(buf);
 	}
 
@@ -576,9 +558,6 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		printf_s(buf);
 
 		if (poseData.bActive) {
-			sprintf_s(buf, sizeof(buf), "%s | pose Active\n", actionDemoHandLeftPath);
-			printf_s(buf);
-
 			vr::VRInputValueHandle_t activeOrigin = poseData.activeOrigin;
 			bool bPoseIsValid = poseData.pose.bPoseIsValid;
 			bool bDeviceIsConnected = poseData.pose.bDeviceIsConnected;
@@ -596,7 +575,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 			// print the tracking data
 			//if (printHmdTrackingData) {
-			sprintf_s(buf, sizeof(buf), "\nHMD\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
+			sprintf_s(buf, sizeof(buf), "\nPose\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
 			printf_s(buf);
 			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 			printf_s(buf);
@@ -606,7 +585,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 		}
 		else {
-			sprintf_s(buf, sizeof(buf), "%s | pose not active\n", actionDemoHandLeftPath);
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoHandLeftPath);
 			printf_s(buf);
 		}
 	}

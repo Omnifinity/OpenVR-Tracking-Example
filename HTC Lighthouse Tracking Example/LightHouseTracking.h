@@ -33,6 +33,9 @@ private:
 	vr::VRInputValueHandle_t m_inputHandLeftPath = vr::k_ulInvalidInputValueHandle;
 	const char *inputHandLeftPath = "/user/hand/left";
 
+	vr::VRInputValueHandle_t m_inputHandRightPath = vr::k_ulInvalidInputValueHandle;
+	const char *inputHandRightPath = "/user/hand/right";
+
 	struct ControllerInfo_t
 	{
 		vr::VRInputValueHandle_t m_source = vr::k_ulInvalidInputValueHandle;

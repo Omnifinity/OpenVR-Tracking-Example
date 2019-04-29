@@ -120,6 +120,16 @@ LighthouseTracking::LighthouseTracking() {
 		sprintf_s(buf, sizeof(buf), "Successfully got %s input handle: %d\n", inputHandLeftPath, m_inputHandLeftPath);
 		printf_s(buf);
 	}
+
+	inputError = vr::VRInput()->GetInputSourceHandle(inputHandRightPath, &m_inputHandRightPath);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get input handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s input handle: %d\n", inputHandRightPath, m_inputHandRightPath);
+		printf_s(buf);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -537,6 +547,25 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			bool m_vDigitalValue0 = digitalData.bState;
 			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
 			printf_s(buf);
+
+			vr::InputOriginInfo_t originInfo;
+			if (vr::VRInputError_None == vr::VRInput()->GetOriginTrackedDeviceInfo(digitalData.activeOrigin, &originInfo, sizeof(originInfo)))
+			{
+				if (originInfo.devicePath == m_inputHandLeftPath) {
+					sprintf_s(buf, sizeof(buf), "From left hand\n");
+					printf_s(buf);
+				}
+
+				if (originInfo.devicePath == m_inputHandRightPath) {
+					sprintf_s(buf, sizeof(buf), "From right hand\n");
+					printf_s(buf);
+				}
+				else {
+					sprintf_s(buf, sizeof(buf), "Not from right hand\n");
+					printf_s(buf);
+				}
+			}
+
 		}
 		else {
 			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoHideCubesPath);
@@ -665,7 +694,9 @@ void LighthouseTracking::PrintDevices() {
 		char serialnumber[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_SerialNumber_String, serialnumber, sizeof(serialnumber));
 
-		sprintf_s(buf, sizeof(buf), " %s - %s [%s]\n", manufacturer, modelnumber, serialnumber);
+		bool canPowerOff = vr::VRSystem()->GetBoolTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_DeviceCanPowerOff_Bool);
+
+		sprintf_s(buf, sizeof(buf), " %s - %s [%s] can power off: %d\n", manufacturer, modelnumber, serialnumber, canPowerOff);
 		printf_s(buf);
 	}
 	sprintf_s(buf, sizeof(buf), "---------------------------\nEnd of device list\n\n");

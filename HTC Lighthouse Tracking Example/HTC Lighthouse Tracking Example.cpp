@@ -75,7 +75,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf_s(buf);
 
 	// If false we'll parse tracking data continously, if true we parse when an openvr event fires
-	bool bAcquireTrackingDataByWaitingForVREvents = false;
+	bool bAcquireTrackingDataByWaitingForVREvents = true;
 
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking();

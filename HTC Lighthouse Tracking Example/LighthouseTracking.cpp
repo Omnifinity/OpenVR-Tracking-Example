@@ -357,6 +357,10 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Leave StandbyMode: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
 				break;
+			case vr::EVREventType::VREvent_StatusUpdate:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Status Update: %d\n", event.trackedDeviceIndex);
+				printf_s(buf);
+				break;
 			case vr::EVREventType::VREvent_PropertyChanged:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Property Changed Device: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
@@ -428,6 +432,11 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 
 			case vr::VREvent_Input_ActionManifestReloaded:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Action Manifest Reloaded\n");
+				printf_s(buf);
+				break;
+
+			case vr::VREvent_Input_HapticVibration:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Haptic Vibration. Component Handle: %d Container Handle: %d Duration: %f Amplitude: %f\n", event.data.hapticVibration.componentHandle, event.data.hapticVibration.containerHandle, event.data.hapticVibration.fDurationSeconds, event.data.hapticVibration.fAmplitude);
 				printf_s(buf);
 				break;
 

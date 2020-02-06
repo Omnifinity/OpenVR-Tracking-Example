@@ -174,13 +174,13 @@ bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1)
 			// Process event
 			if (!ProcessVREvent(event, filterIndex)) {
 				char buf[1024];
-				sprintf_s(buf, sizeof(buf), "(OpenVR) service quit\n");
+				sprintf_s(buf, sizeof(buf), "\n\n(OpenVR) service quit?\n");
 				printf_s(buf);
 				//return false;
 			}
 
 			// parse a frame
-			ParseTrackingFrame(filterIndex);
+			//ParseTrackingFrame(filterIndex);
 		}
 	}
 	else {
@@ -383,6 +383,21 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				break;
 			case vr::EVREventType::VREvent_ProcessConnected:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: A process was connected\n");
+				printf_s(buf);
+				break;
+
+			case vr::VREvent_Compositor_ApplicationNotResponding:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Application Not Responding\n");
+				printf_s(buf);
+				break;
+
+			case vr::VRInitError_Compositor_FirmwareRequiresUpdate:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Firmware Requires Update\n");
+				printf_s(buf);
+				break;
+
+			case vr::VRInitError_Compositor_SettingsInterfaceIsNull:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Settings Interface Is Null\n");
 				printf_s(buf);
 				break;
 

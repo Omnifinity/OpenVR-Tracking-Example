@@ -42,6 +42,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int shouldPrintVersionAndQuit = 0;
 	int showOnlyDevice = -1;
 	int calcControllerDeltaPos = 0;
+	int showEventsOnly = 0;
 
 	char buf[1024];
 
@@ -57,6 +58,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		if (myArg == std::string("--listdevices")) shouldListDevicesAndQuit = atoi(argv[i + 1]);
 		if (myArg == std::string("--showonlydeviceid")) showOnlyDevice = atoi(argv[i + 1]);
 		if (myArg == std::string("--calccontrollerdeltapos")) calcControllerDeltaPos = atoi(argv[i + 1]);
+		if (myArg == std::string("--showeventsonly")) showEventsOnly = atoi(argv[i + 1]);
 		if (myArg == std::string("--v")) shouldPrintVersionAndQuit = 1;
 
 		validArgs.push_back(myArg);
@@ -75,7 +77,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	printf_s(buf);
 
 	// If false we'll parse tracking data continously, if true we parse when an openvr event fires
-	bool bAcquireTrackingDataByWaitingForVREvents = true;
+	bool bAcquireTrackingDataByWaitingForVREvents;
+	if (showEventsOnly == 1)
+		bAcquireTrackingDataByWaitingForVREvents = true;
+	else
+		bAcquireTrackingDataByWaitingForVREvents = false;
 
 	// Create a new LighthouseTracking instance and parse as needed
 	LighthouseTracking *lighthouseTracking = new LighthouseTracking();

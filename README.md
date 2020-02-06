@@ -1,9 +1,12 @@
 #  What is this?
 A rapid and simple example of how to start a background process for listening to HTC Vive Lighthouse tracking data. 
 
-Uses OpenVR 1.3.22 which uses the new input system.
+Uses OpenVR 1.9.16 which uses the new input system.
 
 Compiled using Visual Studio 2013. Please adapt as suitable. 
+There is an issue where Valve broke support for VS2013.
+https://github.com/ValveSoftware/openvr/issues/1288
+Just comment out the code in question.
 
 ##  How do I run it?
 There is an executable in the Binary folder. Unarchive that and run it through a console after you've started Steam VR. Background processes are not allowed to start up SteamVR by themselves. 

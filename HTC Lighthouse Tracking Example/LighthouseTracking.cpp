@@ -483,11 +483,11 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 	actionSet.ulActionSet = m_actionSetDemo;
 	inputError = vr::VRInput()->UpdateActionState(&actionSet, sizeof(actionSet), 1);
 	if (inputError == vr::VRInputError_None) {
-		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Ok\n");
+		sprintf_s(buf, sizeof(buf), "%s | UpdateActionState(): Ok\n", actionSetDemoPath);
 		printf_s(buf);
 	}
 	else {
-		sprintf_s(buf, sizeof(buf), "UpdateActionState(): Error: %d\n", inputError);
+		sprintf_s(buf, sizeof(buf), "%s | UpdateActionState(): Error: %d\n", actionSetDemoPath, inputError);
 		printf_s(buf);
 	}
 
@@ -529,20 +529,15 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoHideCubesPath, m_vDigitalValue0);
 			printf_s(buf);
 
+			// check from which device the action came
 			vr::InputOriginInfo_t originInfo;
 			if (vr::VRInputError_None == vr::VRInput()->GetOriginTrackedDeviceInfo(digitalData.activeOrigin, &originInfo, sizeof(originInfo)))
 			{
 				if (originInfo.devicePath == m_inputHandLeftPath) {
-					sprintf_s(buf, sizeof(buf), "From left hand\n");
+					sprintf_s(buf, sizeof(buf), "Action comes from left hand\n");
 					printf_s(buf);
-				}
-
-				if (originInfo.devicePath == m_inputHandRightPath) {
-					sprintf_s(buf, sizeof(buf), "From right hand\n");
-					printf_s(buf);
-				}
-				else {
-					sprintf_s(buf, sizeof(buf), "Not from right hand\n");
+				} else if (originInfo.devicePath == m_inputHandRightPath) {
+					sprintf_s(buf, sizeof(buf), "Action comes from right hand\n");
 					printf_s(buf);
 				}
 			}

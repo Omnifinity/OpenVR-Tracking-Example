@@ -364,10 +364,18 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 			case vr::EVREventType::VREvent_SceneApplicationChanged:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Scene Application Changed\n");
 				printf_s(buf);
+
+				sprintf_s(buf, sizeof(buf), "(OpenVR) old pid: %d new pid: %d\n", event.data.process.oldPid, event.data.process.pid);
+				printf_s(buf);
+
 				break;
 			case vr::EVREventType::VREvent_SceneFocusChanged:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Scene Focus Changed\n");
 				printf_s(buf);
+
+				sprintf_s(buf, sizeof(buf), "(OpenVR) old pid: %d new pid: %d\n", event.data.process.oldPid, event.data.process.pid);
+				printf_s(buf);
+
 				break;
 			case vr::EVREventType::VREvent_TrackedDeviceUserInteractionStarted:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Tracked Device User Interaction Started Device: %d\n", event.trackedDeviceIndex);

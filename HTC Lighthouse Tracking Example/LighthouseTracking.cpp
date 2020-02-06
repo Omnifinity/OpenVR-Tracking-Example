@@ -156,6 +156,15 @@ bool LighthouseTracking::BInitCompositor()
 */
 bool LighthouseTracking::RunProcedure(bool bWaitForEvents, int filterIndex = -1) {
 
+
+	// check if HMD is connected or not
+	if (!m_pHMD->IsTrackedDeviceConnected(0)) {
+		char buf[1024];
+		sprintf_s(buf, sizeof(buf), "(OpenVR) HMD Not Connected\n");
+		printf_s(buf);
+		return false;
+	}
+
 	// Either A) wait for events, such as hand controller button press, before parsing...
 	if (bWaitForEvents) {
 		// Process VREvent
@@ -266,24 +275,6 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 		}
 		break;
 
-		case (vr::VREvent_ApplicationTransitionStarted) :
-		{
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "(OpenVR) Application Transition: Transition has started\n");
-			printf_s(buf);
-
-		}
-		break;
-
-		case (vr::VREvent_ApplicationTransitionNewAppStarted) :
-		{
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "(OpenVR) Application transition: New app has started\n");
-			printf_s(buf);
-
-		}
-		break;
-
 		case (vr::VREvent_Quit) :
 		{
 			char buf[1024];
@@ -298,16 +289,6 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 		{
 			char buf[1024];
 			sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Process (%d", vr::VREvent_ProcessQuit, ")\n");
-			printf_s(buf);
-
-			return false;
-		}
-		break;
-
-		case (vr::VREvent_QuitAborted_UserPrompt) :
-		{
-			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Aborted UserPrompt (%d", vr::VREvent_QuitAborted_UserPrompt, ")\n");
 			printf_s(buf);
 
 			return false;
@@ -579,7 +560,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 	// get pose data
 	vr::InputPoseActionData_t poseData;
-	inputError = vr::VRInput()->GetPoseActionData(m_actionDemoHandLeft, vr::TrackingUniverseStanding, 0, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle);
+	inputError = vr::VRInput()->GetPoseActionDataForNextFrame(m_actionDemoHandLeft, vr::TrackingUniverseStanding, &poseData, sizeof(poseData), vr::k_ulInvalidInputValueHandle);
 	if (inputError == vr::VRInputError_None) {
 		sprintf_s(buf, sizeof(buf), "%s | GetPoseActionData() Ok\n", actionDemoHandLeftPath);
 		printf_s(buf);
@@ -602,7 +583,7 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 
 			// print the tracking data
 			//if (printHmdTrackingData) {
-			sprintf_s(buf, sizeof(buf), "\nPose\nx: %.2f y: %.2f z: %.2f\n", position.v[0], position.v[1], position.v[2]);
+			sprintf_s(buf, sizeof(buf), "\n%s Pose\nx: %.2f y: %.2f z: %.2f\n", actionDemoHandLeftPath, position.v[0], position.v[1], position.v[2]);
 			printf_s(buf);
 			sprintf_s(buf, sizeof(buf), "qw: %.2f qx: %.2f qy: %.2f qz: %.2f\n", quaternion.w, quaternion.x, quaternion.y, quaternion.z);
 			printf_s(buf);

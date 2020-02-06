@@ -278,7 +278,7 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 		case (vr::VREvent_Quit) :
 		{
 			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "(OpenVR) Received SteamVR Quit (%d", vr::VREvent_Quit, ")\n");
+			sprintf_s(buf, sizeof(buf), "(OpenVR) VREvent_Quit\n");
 			printf_s(buf);
 
 			return false;
@@ -288,7 +288,7 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 		case (vr::VREvent_ProcessQuit) :
 		{
 			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Process (%d", vr::VREvent_ProcessQuit, ")\n");
+			sprintf_s(buf, sizeof(buf), "(OpenVR) VREvent_ProcessQuit\n");
 			printf_s(buf);
 
 			return false;
@@ -298,7 +298,7 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 		case (vr::VREvent_QuitAcknowledged) :
 		{
 			char buf[1024];
-			sprintf_s(buf, sizeof(buf), "(OpenVR) SteamVR Quit Acknowledged (%d", vr::VREvent_QuitAcknowledged, ")\n");
+			sprintf_s(buf, sizeof(buf), "(OpenVR) QuitAcknowledged\n");
 			printf_s(buf);
 
 			return false;
@@ -398,14 +398,36 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Application Not Responding\n");
 				printf_s(buf);
 				break;
+			case vr::VREvent_Compositor_ApplicationResumed:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Application Resumed\n");
+				printf_s(buf);
+				break;
 
 			case vr::VRInitError_Compositor_FirmwareRequiresUpdate:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Firmware Requires Update\n");
 				printf_s(buf);
 				break;
-
 			case vr::VRInitError_Compositor_SettingsInterfaceIsNull:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Settings Interface Is Null\n");
+				printf_s(buf);
+				break;
+			case vr::VRInitError_Compositor_MessageOverlaySharedStateInitFailure:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Message Overlay Shared State Init Failure\n");
+				printf_s(buf);
+				break;
+
+			case vr::VREvent_Input_BindingLoadFailed:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Binding Load Failed\n");
+				printf_s(buf);
+				break;
+
+			case vr::VREvent_Input_BindingLoadSuccessful:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Binding Load Sucessful\n");
+				printf_s(buf);
+				break;
+
+			case vr::VREvent_Input_ActionManifestReloaded:
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Action Manifest Reloaded\n");
 				printf_s(buf);
 				break;
 

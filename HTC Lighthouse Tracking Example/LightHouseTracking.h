@@ -24,6 +24,12 @@ private:
 	vr::VRActionHandle_t m_actionHideCubes = vr::k_ulInvalidActionHandle;
 	const char *actionDemoHideCubesPath = "/actions/demo/in/HideCubes";
 
+	vr::VRActionHandle_t m_actionClick = vr::k_ulInvalidActionHandle;
+	const char *actionDemoClickPath = "/actions/demo/in/ClickAction";
+
+	vr::VRActionHandle_t m_actionTouch = vr::k_ulInvalidActionHandle;
+	const char *actionDemoTouchPath = "/actions/demo/in/TouchAction";
+
 	vr::VRActionHandle_t m_actionDemoHandLeft = vr::k_ulInvalidActionHandle;
 	const char *actionDemoHandLeftPath = "/actions/demo/in/Hand_Left";
 

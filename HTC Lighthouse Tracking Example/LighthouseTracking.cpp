@@ -110,6 +110,28 @@ LighthouseTracking::LighthouseTracking() {
 		printf_s(buf);
 	}
 
+	// handle for a touch action
+	inputError = vr::VRInput()->GetActionHandle(actionDemoTouchPath, &m_actionTouch);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoTouchPath, m_actionTouch);
+		printf_s(buf);
+	}
+
+	// handle for a click action
+	inputError = vr::VRInput()->GetActionHandle(actionDemoClickPath, &m_actionClick);
+	if (inputError != vr::VRInputError_None) {
+		sprintf_s(buf, sizeof(buf), "Error: Unable to get action handle: %d\n", inputError);
+		printf_s(buf);
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "Successfully got %s handle: %d\n", actionDemoClickPath, m_actionClick);
+		printf_s(buf);
+	}
+
 	// handle for controller pose source - not used atm
 	inputError = vr::VRInput()->GetInputSourceHandle(inputHandLeftPath, &m_inputHandLeftPath);
 	if (inputError != vr::VRInputError_None) {
@@ -606,6 +628,83 @@ void LighthouseTracking::ParseTrackingFrame(int filterIndex) {
 		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoHideCubesPath, inputError);
 		printf_s(buf);
 	}
+
+	// Get digital data of a "Touch Action"
+	vr::InputDigitalActionData_t digitalDataTouch;
+	inputError = vr::VRInput()->GetDigitalActionData(m_actionTouch, &digitalDataTouch, sizeof(digitalDataTouch), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None)
+	{
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Ok\n", actionDemoTouchPath);
+		printf_s(buf);
+
+		if (digitalDataTouch.bActive) {
+			bool m_vDigitalValue0 = digitalDataTouch.bState;
+			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoTouchPath, m_vDigitalValue0);
+			printf_s(buf);
+
+			// check from which device the action came
+			vr::InputOriginInfo_t originInfo;
+			if (vr::VRInputError_None == vr::VRInput()->GetOriginTrackedDeviceInfo(digitalDataTouch.activeOrigin, &originInfo, sizeof(originInfo)))
+			{
+				if (originInfo.devicePath == m_inputHandLeftPath) {
+					sprintf_s(buf, sizeof(buf), "Action comes from left hand\n");
+					printf_s(buf);
+				}
+				else if (originInfo.devicePath == m_inputHandRightPath) {
+					sprintf_s(buf, sizeof(buf), "Action comes from right hand\n");
+					printf_s(buf);
+				}
+			}
+
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoTouchPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoTouchPath, inputError);
+		printf_s(buf);
+	}
+
+	// Get digital data of a "Click Action"
+	vr::InputDigitalActionData_t digitalDataClick;
+	inputError = vr::VRInput()->GetDigitalActionData(m_actionClick, &digitalDataClick, sizeof(digitalDataClick), vr::k_ulInvalidInputValueHandle);
+	if (inputError == vr::VRInputError_None)
+	{
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Ok\n", actionDemoClickPath);
+		printf_s(buf);
+
+		if (digitalDataClick.bActive) {
+			bool m_vDigitalValue0 = digitalDataClick.bState;
+			sprintf_s(buf, sizeof(buf), "%s | State: %d\n", actionDemoClickPath, m_vDigitalValue0);
+			printf_s(buf);
+
+			// check from which device the action came
+			vr::InputOriginInfo_t originInfo;
+			if (vr::VRInputError_None == vr::VRInput()->GetOriginTrackedDeviceInfo(digitalDataClick.activeOrigin, &originInfo, sizeof(originInfo)))
+			{
+				if (originInfo.devicePath == m_inputHandLeftPath) {
+					sprintf_s(buf, sizeof(buf), "Action comes from left hand\n");
+					printf_s(buf);
+				}
+				else if (originInfo.devicePath == m_inputHandRightPath) {
+					sprintf_s(buf, sizeof(buf), "Action comes from right hand\n");
+					printf_s(buf);
+				}
+			}
+
+		}
+		else {
+			sprintf_s(buf, sizeof(buf), "%s | action not avail to be bound\n", actionDemoClickPath);
+			printf_s(buf);
+		}
+	}
+	else {
+		sprintf_s(buf, sizeof(buf), "%s | GetDigitalActionData() Not Ok. Error: %d\n", actionDemoClickPath, inputError);
+		printf_s(buf);
+	}
+
 
 	// get pose data
 	vr::InputPoseActionData_t poseData;

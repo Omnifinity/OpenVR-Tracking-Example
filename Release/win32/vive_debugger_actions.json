@@ -15,6 +15,14 @@
             "type": "vector2"
         },
         {
+            "name": "/actions/demo/in/TouchAction",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/demo/in/ClickAction",
+            "type": "boolean"
+        },
+        {
             "name": "/actions/demo/in/Hand_Right",
             "type": "pose"
         },

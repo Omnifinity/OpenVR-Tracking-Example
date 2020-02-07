@@ -365,7 +365,6 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) controller button: %d\n", vrevent_controller.button);
 				printf_s(buf);
 			}
-
 				break;
 			case vr::EVREventType::VREvent_ButtonUnpress:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Release Device: %d\n", event.trackedDeviceIndex);
@@ -383,22 +382,36 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Property Changed Device: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
 				break;
+
 			case vr::EVREventType::VREvent_SceneApplicationChanged:
+			{
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Scene Application Changed\n");
 				printf_s(buf);
 
 				sprintf_s(buf, sizeof(buf), "(OpenVR) old pid: %d new pid: %d\n", event.data.process.oldPid, event.data.process.pid);
 				printf_s(buf);
 
+				// Another way of getting the current scene application (can be called anytime)
+				uint32_t pid = vr::VRApplications()->GetCurrentSceneProcessId();
+				sprintf_s(buf, sizeof(buf), "(OpenVR) vr::VRApplications()->GetCurrentSceneProcessId() pid: %d\n", pid);
+				printf_s(buf);
+
+				// Request and show its steam app key
+				vr::EVRApplicationError eError = vr::VRApplications()->GetApplicationKeyByProcessId(pid, applicationKey, vr::k_unMaxApplicationKeyLength);
+				sprintf_s(buf, sizeof(buf), "(OpenVR) vr::VRApplications()->GetApplicationKeyByProcessId() key: %s\n", applicationKey);
+				printf_s(buf);
+
+			}
 				break;
+
 			case vr::EVREventType::VREvent_SceneFocusChanged:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Scene Focus Changed\n");
 				printf_s(buf);
 
 				sprintf_s(buf, sizeof(buf), "(OpenVR) old pid: %d new pid: %d\n", event.data.process.oldPid, event.data.process.pid);
 				printf_s(buf);
-
 				break;
+
 			case vr::EVREventType::VREvent_TrackedDeviceUserInteractionStarted:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Tracked Device User Interaction Started Device: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
@@ -407,6 +420,7 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Tracked Device User Interaction Ended Device: %d\n", event.trackedDeviceIndex);
 				printf_s(buf);
 				break;
+
 			case vr::EVREventType::VREvent_ProcessDisconnected:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: A process was disconnected\n");
 				printf_s(buf);
@@ -424,7 +438,6 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Application Resumed\n");
 				printf_s(buf);
 				break;
-
 			case vr::VRInitError_Compositor_FirmwareRequiresUpdate:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Compositor: Firmware Requires Update\n");
 				printf_s(buf);
@@ -442,12 +455,10 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Binding Load Failed\n");
 				printf_s(buf);
 				break;
-
 			case vr::VREvent_Input_BindingLoadSuccessful:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Binding Load Sucessful\n");
 				printf_s(buf);
 				break;
-
 			case vr::VREvent_Input_ActionManifestReloaded:
 				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Action Manifest Reloaded\n");
 				printf_s(buf);

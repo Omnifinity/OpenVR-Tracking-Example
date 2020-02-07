@@ -458,7 +458,7 @@ bool LighthouseTracking::ProcessVREvent(const vr::VREvent_t & event, int filterO
 				break;
 
 			case vr::VREvent_Input_HapticVibration:
-				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Haptic Vibration. Component Handle: %d Container Handle: %d Duration: %f Amplitude: %f\n", event.data.hapticVibration.componentHandle, event.data.hapticVibration.containerHandle, event.data.hapticVibration.fDurationSeconds, event.data.hapticVibration.fAmplitude);
+				sprintf_s(buf, sizeof(buf), "(OpenVR) Event: Input: Haptic Vibration. Component Handle: %d Container Handle: %d Duration: %f Amplitude: %f Frequency: %f\n", event.data.hapticVibration.componentHandle, event.data.hapticVibration.containerHandle, event.data.hapticVibration.fDurationSeconds, event.data.hapticVibration.fAmplitude, event.data.hapticVibration.fFrequency);
 				printf_s(buf);
 				break;
 

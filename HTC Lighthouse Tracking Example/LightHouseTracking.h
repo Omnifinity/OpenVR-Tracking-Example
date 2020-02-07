@@ -14,6 +14,9 @@ private:
 	vr::TrackedDevicePose_t m_rTrackedDevicePose[vr::k_unMaxTrackedDeviceCount];
 	Matrix4 m_rmat4DevicePose[vr::k_unMaxTrackedDeviceCount];
 
+	// For getting the steam application key
+	char applicationKey[vr::k_unMaxApplicationKeyLength];
+
 	// Handles for the new IVRInput
 	vr::VRActionSetHandle_t m_actionSetDemo = vr::k_ulInvalidActionSetHandle;
 	const char *actionSetDemoPath = "/actions/demo";

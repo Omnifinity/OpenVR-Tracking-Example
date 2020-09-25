@@ -1,0 +1,50 @@
+{
+   "action_manifest_version" : 0,
+   "alias_info" : {},
+   "bindings" : {
+      "/actions/demo" : {
+         "poses" : [
+            {
+               "output" : "/actions/demo/in/hand_left",
+               "path" : "/user/hand/left/pose/raw"
+            },
+            {
+               "output" : "/actions/demo/in/hand_right",
+               "path" : "/user/hand/right/pose/raw"
+            }
+         ],
+         "sources" : [
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/demo/in/clickaction"
+                  },
+                  "position" : {
+                     "output" : "/actions/demo/in/analoginput"
+                  },
+                  "touch" : {
+                     "output" : "/actions/demo/in/touchaction"
+                  }
+               },
+               "mode" : "trackpad",
+               "path" : "/user/hand/left/input/trackpad"
+            },
+            {
+               "inputs" : {
+                  "click" : {
+                     "output" : "/actions/demo/in/hidecubes"
+                  }
+               },
+               "mode" : "button",
+               "path" : "/user/hand/left/input/trigger"
+            }
+         ]
+      }
+   },
+   "category" : "steamvr_input",
+   "controller_type" : "vive_pro",
+   "description" : "Default configuration",
+   "name" : "My vive_debugger configuration for Vive Pro",
+   "options" : {},
+   "simulated_actions" : []
+}

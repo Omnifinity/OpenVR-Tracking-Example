@@ -111,6 +111,7 @@ copy /Y "$(TargetPath)" "\\DESKTOP-GH45UK8\Omnifinity\vive_debugger\$(TargetName
   <ItemGroup>
     <None Include="..\Release\win32\vive_debugger_actions.json" />
     <None Include="..\Release\win32\vive_debugger_bindings_vive_controller.json" />
+    <None Include="..\Release\win32\vive_debugger_bindings_vive_pro.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

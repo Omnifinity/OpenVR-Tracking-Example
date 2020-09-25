@@ -42,5 +42,6 @@
   <ItemGroup>
     <None Include="..\Release\win32\vive_debugger_actions.json" />
     <None Include="..\Release\win32\vive_debugger_bindings_vive_controller.json" />
+    <None Include="..\Release\win32\vive_debugger_bindings_vive_pro.json" />
   </ItemGroup>
 </Project>

@@ -5,8 +5,13 @@
             "binding_url": "vive_debugger_bindings_vive_controller.json"
         },
         {
-            "binding_url" : "vive_debugger_bindings_vive_pro.json",
-            "controller_type" : "vive_pro"
+            "controller_type": "knuckles",
+            "binding_url": "vive_debugger_bindings_knuckles.json"
+        },
+        {
+            "controller_type" : "vive_pro",
+            "binding_url": "vive_debugger_bindings_vive_pro.json"
+
         }
     ],
     "actions": [

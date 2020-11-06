@@ -1,5 +1,5 @@
 {
-   "action_manifest_version" : 0,
+   "action_manifest_version" : 1,
    "alias_info" : {},
    "app_key" : "system.generated.vive_debugger.exe",
    "bindings" : {
@@ -43,9 +43,9 @@
       }
    },
    "category" : "steamvr_input",
-   "controller_type" : "vive_controller",
+   "controller_type" : "knuckles",
    "description" : "Default Index Controller bindings for Vive Debugger.",
-   "name" : "My vive_debugger configuration for Vive Controller",
+   "name" : "My vive_debugger Index Controller Bindings",
    "options" : {},
    "simulated_actions" : []
 }

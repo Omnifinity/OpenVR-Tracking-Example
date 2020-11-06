@@ -44,7 +44,7 @@
    },
    "category" : "steamvr_input",
    "controller_type" : "vive_controller",
-   "description" : "",
+   "description" : "Default Index Controller bindings for Vive Debugger.",
    "name" : "My vive_debugger configuration for Vive Controller",
    "options" : {},
    "simulated_actions" : []

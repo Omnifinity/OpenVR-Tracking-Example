@@ -1,0 +1,45 @@
+{
+  "action_manifest_version": 1,
+  "alias_info": {},
+  "app_key": "system.generated.openvr_tracking_example.exe",
+  "bindings": {
+    "/actions/demo": {
+      "poses": [
+      ],
+      "sources": [
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/omnitrack/in/headsetonhead"
+            }
+          },
+          "mode": "button",
+          "path": "/user/head/proximity"
+        }
+      ]
+    },
+    "/actions/legacy": {
+      "haptics": [
+      ],
+      "poses": [
+      ],
+      "sources": [
+        {
+          "inputs": {
+            "click": {
+              "output": "/actions/legacy/in/head_proximity"
+            }
+          },
+          "mode": "button",
+          "path": "/user/head/proximity"
+        }
+      ]
+    }
+  },
+  "category": "steamvr_input",
+  "controller_type": "vive",
+  "description": "Default Vive configuration for openvr_tracking_example.",
+  "name": "My openvr_tracking_example configuration for Vive.",
+  "options": {},
+  "simulated_actions": []
+}

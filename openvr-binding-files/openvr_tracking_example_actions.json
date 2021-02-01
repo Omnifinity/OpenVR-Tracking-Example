@@ -1,19 +1,22 @@
 {
-    "default_bindings": [
-        {
-            "controller_type": "vive_controller",
-            "binding_url": "vive_debugger_bindings_vive_controller.json"
-        },
-        {
-            "controller_type": "knuckles",
-            "binding_url": "vive_debugger_bindings_knuckles.json"
-        },
-        {
-            "controller_type" : "vive_pro",
-            "binding_url": "vive_debugger_bindings_vive_pro.json"
-
-        }
-    ],
+  "default_bindings": [
+    {
+      "controller_type": "vive",
+      "binding_url": "openvr_tracking_example_bindings_vive.json"
+    },
+    {
+      "controller_type": "vive_controller",
+      "binding_url": "openvr_tracking_example_bindings_vive_controller.json"
+    },
+    {
+      "controller_type": "knuckles",
+      "binding_url": "openvr_tracking_example_bindings_knuckles.json"
+    },
+    {
+      "controller_type": "vive_pro",
+      "binding_url": "openvr_tracking_example_bindings_vive_pro.json"
+    }
+  ],
     "actions": [
         {
             "name": "/actions/demo/in/HideCubes",

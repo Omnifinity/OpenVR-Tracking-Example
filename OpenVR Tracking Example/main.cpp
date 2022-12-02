@@ -1,7 +1,6 @@
 /*
-OpenVR-Tracking-Example
+OpenVR-Tracking-Example Copyright 2016-2022 Omnifinity
 Example on how to access tracking data from OpenVR
-Copyright 2016, 2017, 2018, 2019, 2020, 2021, Omnifinity
 
 OpenVR Copyright (c) 2015, Valve Corporation
 
@@ -51,8 +50,9 @@ using std::vector;
 using std::string;
 
 #define SOFTWARE_NAME "openvr_tracking_example"
-#define SOFTWARE_VERSION "1.7"
-#define SOFTWARE_CURRENT_YEAR "2021"
+#define SOFTWARE_VERSION "1.8"
+#define SOFTWARE_CURRENT_YEAR "2022"
+#define VER_180 "Using openvr 1.23.7"	// Also: Built for MSVC2022. Updates to project settings.
 #define VER_170 "Built for MSVC2019. Renamed Executable. Renamed class."
 #define VER_160 "Using openvr 1.14.15"
 #define VER_150 "Using openvr 1.9.16"
@@ -60,7 +60,7 @@ using std::string;
 #define VER_130 "Using openvr 1.3.22"
 #define VER_120 "Using openvr 1.2.10"
 #define VER_110 "Using openvr 1.1.3"
-#define VER_CURRENT_STRING VER_160
+#define VER_CURRENT_STRING VER_180
 
 void printSoftwareVersion() {
 	char buf[1024];
@@ -126,9 +126,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		trackingHandler->PrintDevices();
 
 		if (parseTrackingData) {
-			sprintf_s(buf, sizeof(buf), "Press 'q' to quit. Starting capture of tracking data...\n");
+			DWORD delayOnStart = 2000;
+			sprintf_s(buf, sizeof(buf), "Press 'q' to quit. Starting capture of tracking data in %d ms...\n", delayOnStart);
 			printf_s(buf);
-			Sleep(2000);
+			Sleep(delayOnStart);
 
 			while (trackingHandler->RunProcedure(bAcquireTrackingDataByWaitingForVREvents, showOnlyDevice)) {
 

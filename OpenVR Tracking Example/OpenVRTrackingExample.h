@@ -1,6 +1,5 @@
 /*
 OpenVR-Tracking-Example Copyright 2016-2022 Omnifinity
-
 Example on how to access tracking data from OpenVR
 
 OpenVR Copyright (c) 2015, Valve Corporation
@@ -38,8 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // OpenVR
 #include <openvr.h>
-#include "..\..\openvr\samples\shared\Matrices.h"
-#include "..\..\openvr\samples\shared\pathtools.h"
+#include "samples\shared\Matrices.h"
+#include "samples\shared\pathtools.h"
 
 //#include "pathtools_excerpt.h"
 

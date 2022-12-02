@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "pch.h" // use stdafx.h in Visual Studio 2017 and earlier
 
 #include <Windows.h>
-#include "..\..\openvr\samples\shared\pathtools.h"
+#include "samples\shared\pathtools.h"
 
 bool Path_IsAbsolute(const std::string& sPath)
 {

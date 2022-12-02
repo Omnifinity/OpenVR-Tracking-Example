@@ -1,7 +1,7 @@
 /*
-OpenVR-Tracking-Example
+OpenVR-Tracking-Example Copyright 2016-2022 Omnifinity
+
 Example on how to access tracking data from OpenVR
-Copyright 2016, 2017, 2018, 2019, 2020, 2021, Omnifinity
 
 OpenVR Copyright (c) 2015, Valve Corporation
 

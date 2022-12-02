@@ -52,7 +52,7 @@ using std::string;
 #define SOFTWARE_NAME "openvr_tracking_example"
 #define SOFTWARE_VERSION "1.8"
 #define SOFTWARE_CURRENT_YEAR "2022"
-#define VER_180 "Built for MSVC2022. Updates to project settings."
+#define VER_180 "Built for MSVC2022. Updates to project settings. Using openvr 1.23.7"
 #define VER_170 "Built for MSVC2019. Renamed Executable. Renamed class."
 #define VER_160 "Using openvr 1.14.15"
 #define VER_150 "Using openvr 1.9.16"

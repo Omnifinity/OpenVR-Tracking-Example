@@ -1,9 +1,9 @@
 #  What is this?
 A simple example showing how to fire up a background process for acquiring tracking data from openvr. 
 
-Uses OpenVR 1.14.15.
+Uses OpenVR 1.23.7.
 
-Compiled using Visual Studio 2019. Please adapt as suitable. 
+Compiled using Visual Studio 2022. Please adapt as suitable. 
 
 ##  How do I run it?
 There is an executable in the Binary folder. Unarchive that and run it through a console after you've started Steam VR. Background processes are not allowed to start up SteamVR by themselves. 

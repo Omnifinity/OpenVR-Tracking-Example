@@ -1,7 +1,6 @@
 /*
-OpenVR-Tracking-Example
+OpenVR-Tracking-Example Copyright 2016-2022 Omnifinity
 Example on how to access tracking data from OpenVR
-Copyright 2016, 2017, 2018, 2019, 2020, 2021, Omnifinity
 
 OpenVR Copyright (c) 2015, Valve Corporation
 
@@ -51,8 +50,9 @@ using std::vector;
 using std::string;
 
 #define SOFTWARE_NAME "openvr_tracking_example"
-#define SOFTWARE_VERSION "1.7"
-#define SOFTWARE_CURRENT_YEAR "2021"
+#define SOFTWARE_VERSION "1.8"
+#define SOFTWARE_CURRENT_YEAR "2022"
+#define VER_180 "Built for MSVC2022. Updates to project settings."
 #define VER_170 "Built for MSVC2019. Renamed Executable. Renamed class."
 #define VER_160 "Using openvr 1.14.15"
 #define VER_150 "Using openvr 1.9.16"

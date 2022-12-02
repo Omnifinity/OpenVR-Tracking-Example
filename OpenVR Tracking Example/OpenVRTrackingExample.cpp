@@ -827,6 +827,13 @@ void OpenVRTrackingExample::PrintDevices() {
 		// Get what type of device it is and work with its data
 		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(unDevice);
 		switch (trackedDeviceClass) {
+		case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
+			// do stuff for an invalid class
+
+			sprintf_s(buf, sizeof(buf), "Device %d: Class: [Invalid]", unDevice);
+			printf_s(buf);
+			break;
+
 		case vr::ETrackedDeviceClass::TrackedDeviceClass_HMD:
 			// print stuff for the HMD here, see controller stuff in next case block
 
@@ -863,16 +870,25 @@ void OpenVRTrackingExample::PrintDevices() {
 			printf_s(buf);
 			break;
 
-		case vr::ETrackedDeviceClass::TrackedDeviceClass_Invalid:
-			// do stuff for an invalid class
-
-			sprintf_s(buf, sizeof(buf), "Device %d: Class: [Invalid]", unDevice);
-			printf_s(buf);
-			break;
-
 		}
 
 		// print some of the meta data for the device
+
+		// How does this work? deprecated due to new IVRInput?
+		int32_t role;
+		vr::ETrackedPropertyError pError;
+		role = vr::VRSystem()->GetInt32TrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ControllerRoleHint_Int32, &pError);
+		if (pError == vr::ETrackedPropertyError::TrackedProp_Success) {
+			if (role == vr::ETrackedControllerRole::TrackedControllerRole_Invalid) {
+				sprintf_s(buf, sizeof(buf), " | Invalid Role (?): %d", role);
+				printf_s(buf);
+			}
+			else {
+				sprintf_s(buf, sizeof(buf), " | Role: %d", role);
+				printf_s(buf);
+			}
+		}
+
 		char manufacturer[1024];
 		vr::VRSystem()->GetStringTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_ManufacturerName_String, manufacturer, sizeof(manufacturer));
 
@@ -884,7 +900,7 @@ void OpenVRTrackingExample::PrintDevices() {
 
 		bool canPowerOff = vr::VRSystem()->GetBoolTrackedDeviceProperty(unDevice, vr::ETrackedDeviceProperty::Prop_DeviceCanPowerOff_Bool);
 
-		sprintf_s(buf, sizeof(buf), " %s - %s [%s] can power off: %d\n", manufacturer, modelnumber, serialnumber, canPowerOff);
+		sprintf_s(buf, sizeof(buf), " | Manuf: %s | Model: %s | Serial: %s | Can power Off: %d\n", manufacturer, modelnumber, serialnumber, canPowerOff);
 		printf_s(buf);
 	}
 	sprintf_s(buf, sizeof(buf), "---------------------------\nEnd of device list\n\n");
